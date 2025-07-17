@@ -7,7 +7,7 @@ const app = express({
 });
 const cors = require("cors");
 const PORT = process.env.PORT;
-const { runExpireFunctions } = require("./controllers/autoupdatestatus");
+//const { runExpireFunctions } = require("./controllers/autoupdatestatus");
 
 app.use(express.json());
 app.use(cors());
@@ -26,7 +26,7 @@ app.use("/mentee", menteeRoutes);
 app.use("/student", studentRoutes);
 
 
-runExpireFunctions();
+//runExpireFunctions();
 app.listen(PORT, () =>
   console.log(`🚀server running successfully on http://localhost:${PORT}`)
 );

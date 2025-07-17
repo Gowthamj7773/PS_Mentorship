@@ -150,6 +150,29 @@ router.get('/mentor-feedback/:mentor_email/:language',verifyToken, (req, res) =>
   });
 });
 
+//historty of mentor requests
+router.get("/history", (req, res) => {
+  const sql = `
+    SELECT 
+      id, 
+      student_email, 
+      language_name, 
+      DATE_FORMAT(request_date, '%d/%m/%Y') AS request_date, 
+      status, 
+      rejection_reason, 
+      view
+    FROM mentor_requests
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("DB error:", err);
+      return res.status(500).json({ message: "Database error" });
+    }
+    res.status(200).json(results);
+  });
+});
+
 
 
 module.exports = router;
