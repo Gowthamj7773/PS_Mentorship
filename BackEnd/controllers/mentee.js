@@ -198,6 +198,70 @@ router.get('/avg-rating/:mentor_email/:language', verifyToken, (req, res) => {
   });
 });
 
+//individual stars
+router.get('/individual-rating/:mentor_email/:language', (req, res) => {
+  const mentorEmail = req.params.mentor_email;
+  const language = req.params.language;
+
+  const query = `
+    SELECT 
+      mf.rating,
+      mf.mentee_email,
+      ud.name AS mentee_name   -- adjust column to match your schema
+    FROM mentor_feedback mf
+    JOIN userdetails ud ON mf.mentee_email = ud.email
+    WHERE mf.mentor_email = ? AND mf.language_name = ?;
+  `;
+
+  db.query(query, [mentorEmail, language], (err, results) => {
+    if (err) {
+      console.error('Error fetching individual ratings for mentor by language:', err);
+      return res.status(500).send('Internal server error');
+    }
+
+    // No ratings found
+    if (!results || results.length === 0) {
+      return res.json([]);
+    }
+
+    // Return array of objects (recommended)
+    // [{mentee_email, mentee_name, rating}, ...]
+    return res.json(results);
+  });
+});
+
+//count of stars
+router.get('/rating-count/:mentor_email/:language', (req, res) => {
+  const mentorEmail = req.params.mentor_email;
+  const language = req.params.language;
+
+  const query = `
+    SELECT 
+      rating,
+      COUNT(*) AS count
+    FROM mentor_feedback
+    WHERE mentor_email = ? AND language_name = ?
+    GROUP BY rating
+    ORDER BY rating;
+  `;
+
+  db.query(query, [mentorEmail, language], (err, results) => {
+    if (err) {
+      console.error('Error fetching rating counts:', err);
+      return res.status(500).send('Internal server error');
+    }
+
+    // Convert results into an object with default 0 for missing ratings
+    const ratingCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    results.forEach(row => {
+      ratingCounts[row.rating] = row.count;
+    });
+
+    res.json(ratingCounts);
+  });
+});
+
+
 
 //🚫✋Dont touch this
 // Helper function for date formatting
