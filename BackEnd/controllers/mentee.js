@@ -199,7 +199,7 @@ router.get('/avg-rating/:mentor_email/:language', verifyToken, (req, res) => {
 });
 
 //individual stars
-router.get('/individual-rating/:mentor_email/:language', (req, res) => {
+router.get('/individual-rating/:mentor_email/:language', verifyToken, (req, res) => {
   const mentorEmail = req.params.mentor_email;
   const language = req.params.language;
 
@@ -231,7 +231,7 @@ router.get('/individual-rating/:mentor_email/:language', (req, res) => {
 });
 
 //count of stars
-router.get('/rating-count/:mentor_email/:language', (req, res) => {
+router.get('/rating-count/:mentor_email/:language', verifyToken, (req, res) => {
   const mentorEmail = req.params.mentor_email;
   const language = req.params.language;
 
